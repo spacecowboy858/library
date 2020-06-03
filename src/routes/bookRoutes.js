@@ -1,41 +1,34 @@
 const express = require('express');
-
-const bookRouter = express.Router();
-const sql = require('mssql');
+const { MongoClient } = require('mongodb');
 const debug = require('debug')('app:bookRoutes');
 
+const bookRouter = express.Router();
+
 function router(nav) {
+  const books = [];
   bookRouter.route('/')
     .get((req, res) => {
-      (async function query() {
-        const request = new sql.Request();
-        const { recordset } = await request.query('select * from books');
-        res.render('bookListView', {
+      res.render(
+        'bookListView',
+        {
           nav,
           title: 'Library',
-          books: recordset
-        });
-      }());
+          books
+        }
+      );
     });
 
   bookRouter.route('/:id')
-    .all((req, res, next) => {
-      (async function query() {
-        const { id } = req.params;
-        const request = new sql.Request();
-        const { recordset } = await request.input('id', sql.Int, id)
-          .query('select * from books where id = @id');
-        debug(recordset);
-        [req.book] = recordset;
-        next();
-      }());
-    })
     .get((req, res) => {
-      res.render('bookView', {
-        nav,
-        title: 'Library',
-        book: req.book
-      });
+      const { id } = req.params;
+      res.render(
+        '',
+        {
+          nav,
+          title: 'Library',
+          book: books[id]
+        }
+      );
     });
 
   return bookRouter;
