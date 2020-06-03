@@ -62,14 +62,6 @@ function router(nav) {
           debug(err.stack);
         }
       }());
-      res.render(
-        '',
-        {
-          nav,
-          title: 'Library',
-          book: books[id]
-        }
-      );
     });
 
   return bookRouter;
